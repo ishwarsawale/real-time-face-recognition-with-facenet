@@ -35,8 +35,9 @@ with tf.Graph().as_default():
         batch_size = 1000
         image_size = 182
         input_image_size = 160
-
-        HumanNames = ['Arie_Haan','Deepak_Wani','Donnie_Brennan','Ishwar_Sawale','Yusaku_Miyazato']    #train human name
+        
+        HumanNames = os.listdir("./input_dir")
+        HumanNames.sort()
 
         print('Loading feature extraction model')
         modeldir = './pre_model/20170511-185253.pb'
