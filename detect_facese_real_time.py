@@ -19,7 +19,13 @@ import math
 import pickle
 from sklearn.svm import SVC
 from sklearn.externals import joblib
+import pymongo
+from pymongo import MongoClient
+import datetime
 
+client = MongoClient()
+client = MongoClient('localhost', 27017)
+db = client.retail_db
 print('Creating networks and loading parameters')
 with tf.Graph().as_default():
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
@@ -35,7 +41,7 @@ with tf.Graph().as_default():
         batch_size = 1000
         image_size = 182
         input_image_size = 160
-        
+
         HumanNames = os.listdir("./input_dir")
         HumanNames.sort()
 
@@ -54,7 +60,7 @@ with tf.Graph().as_default():
             (model, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
 
-        video_capture = cv2.VideoCapture('./test.mp4')
+        video_capture = cv2.VideoCapture(0)
         c = 0
 
         # #video writer
@@ -124,14 +130,25 @@ with tf.Graph().as_default():
                         text_x = bb[i][0]
                         text_y = bb[i][3] + 20
                         print('result: ', best_class_indices[0])
-                        print(best_class_indices)
-                        print(HumanNames)
+                        # print(best_class_indices)
+                        # print(HumanNames)
                         for H_i in HumanNames:
-                            print(H_i)
-                            if HumanNames[best_class_indices[0]] == H_i:
-                                result_names = HumanNames[best_class_indices[0]]
+                            # print(H_i)
+                            if best_class_probabilities * 100 > 70:
+                                if HumanNames[best_class_indices[0]] == H_i:
+                                    user = {"author": "Admin",
+                                            "text": HumanNames[best_class_indices[0]],
+                                             "date": datetime.datetime.utcnow()}
+                                    users = db.users
+                                    user_id = users.insert_one(user).inserted_id
+                                    print (user_id)
+                                    result_names = HumanNames[best_class_indices[0]]
+                                    cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
+                                                1, (0, 0, 255), thickness=1, lineType=2)
+                            else:
+                                result_names = 'Not known'
                                 cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                            1, (0, 0, 255), thickness=1, lineType=2)
+                                                1, (0, 0, 255), thickness=1, lineType=2)
                 else:
                     print('Unable to align')
 
