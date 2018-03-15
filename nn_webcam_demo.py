@@ -9,20 +9,13 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from scipy import misc
-import cv2
 import matplotlib.pyplot as plt
-import numpy as np
-import argparse
 import facenet
 import detect_face
 import os
 from os.path import join as pjoin
-import sys
-import time
 import copy
 import math
-import pickle
 from sklearn.svm import SVC
 from sklearn.externals import joblib
 import pymongo
@@ -33,7 +26,6 @@ import keras
 from tensorflow.python.platform import gfile
 import numpy as np
 import sys
-import os
 import detect_and_align
 import id_data
 from scipy import misc
@@ -175,7 +167,8 @@ def recom():
                                     print("from KNN Dlib: ", knn_name)
                                     print("from weights Dlib:", emb_name)
                                     print ('from Facent NN :', result_names)
-                                    print('from embedding facenet', matching_id, dist)
+                                    print('from embedding facenet ', matching_id)
+                                    print('from facenet embedding distance: ', dist)
                                     print('probability score NN Facenet: ', best_class_probabilities)
                                     # for name, (top, right, bottom, left) in predictions:
                                         # print("- Found {} at ({}, {})".format(name, left, top))
