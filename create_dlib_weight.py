@@ -29,7 +29,9 @@ def scan_known_people(known_people_folder):
                 click.echo("WARNING: More than one face found in {}. Only considering the first face.".format(file))
 
             if len(encodings) == 0:
+                os.remove(file)
                 click.echo("WARNING: No faces found in {}. Ignoring file.".format(file))
+                print('removed file %s' % file)
             else:
                 print(file)
                 known_names.append(basename)
@@ -38,7 +40,7 @@ def scan_known_people(known_people_folder):
 
 
 def dlib_weights():
-    names, weights = scan_known_people('./out_dir')
+    names, weights = scan_known_people('./input_dir')
     with open('dlib_weights_names', 'wb') as fp:
         pickle.dump(names, fp)
     with open('dlib_weights', 'wb') as fp:

@@ -38,6 +38,8 @@ import pickle
 from PIL import Image
 import idlib
 import dlib_embed
+import urllib
+import menu_driven as menu
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # import recommender
 
@@ -77,7 +79,15 @@ def recom():
             embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
-            model = load_model('my_model.h5')
+
+            classifier_filename = './my_class/my_classifier.pkl'
+            classifier_filename_exp = os.path.expanduser(classifier_filename)
+            with open(classifier_filename_exp, 'rb') as infile:
+                (model_svm, class_names) = pickle.load(infile)
+            print('load classifier file-> %s' % classifier_filename_exp)
+
+            model = load_model('my_model_with_unknown.h5')
+            # model = load_model('my_model.h5')
             with open ('weights', 'rb') as fp:
                 id_dataset = pickle.load(fp)
             with open ('dlib_weights_names', 'rb') as fp:
@@ -142,34 +152,54 @@ def recom():
                         feed_dict = {images_placeholder: scaled_reshape[i], phase_train_placeholder: False}
                         emb_array[0, :] = sess.run(embeddings, feed_dict=feed_dict)
                         matching_id, dist = twoFace.find_matching_id(id_dataset, emb_array[0, :])
+                        
                         predictions = model.predict_proba(emb_array)
                         best_class_indices = np.argmax(predictions, axis=1)
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
 
+                        predictions_svm = model_svm.predict_proba(emb_array)
+                        # print(predictions_svm)
+                        best_class_indices_svm = np.argmax(predictions_svm, axis=1)
+                        # print(best_class_indices_svm)
+                        best_class_probabilities_svm = predictions_svm[np.arange(len(best_class_indices_svm)), best_class_indices_svm]
+                        # print(best_class_probabilities_svm)
                         #plot result idx under box
                         text_x = bb[i][0]
                         text_y = bb[i][3] + 20
                         result_names = ''
+                        result_names_svm = ''
+                        for H_i in HumanNames:
+                            if HumanNames[best_class_indices_svm[0]] == H_i:
+                                result_names_svm = HumanNames[best_class_indices_svm[0]]
                         for H_i in HumanNames:
                             if HumanNames[best_class_indices[0]] == H_i:
                                 result_names = HumanNames[best_class_indices[0]]
                                 frame_to_check = np.array(pil_im)
                                 predictions = idlib.predict(frame_to_check, model_path="trained_knn_model.clf")
-                                emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.4, False)
+                                emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.3, False)
                                 knn_name = ''
                                 for name, (top, right, bottom, left) in predictions:
                                     knn_name = name
                                 conf = (2 - dist) * 50 
                                 # print(conf)
+                                one_or = ''
+                                if matching_id == knn_name:
+                                    one_or = matching_id
+                                if emb_name == result_names:
+                                    one_or = emb_name
                                 dist_threshold = 0.3
-                                if (knn_name == emb_name == result_names) and (best_class_probabilities >= 0.70) and conf > 30 :
+                                if (knn_name == result_names == result_names_svm) and (best_class_probabilities >= 0.70) and conf > 30 :
                                     # print ('recognized user is:', result_names)
                                     print("from KNN Dlib: ", knn_name)
                                     print("from weights Dlib:", emb_name)
                                     print ('from Facent NN :', result_names)
+                                    print ('from Facent SVM :', result_names_svm)
                                     print('from embedding facenet ', matching_id)
                                     print('from facenet embedding distance: ', dist)
                                     print('probability score NN Facenet: ', best_class_probabilities)
+                                    print(' one or : ', one_or)
+
+                                    print('final value after at frame :', result_names)
                                     # for name, (top, right, bottom, left) in predictions:
                                         # print("- Found {} at ({}, {})".format(name, left, top))
                                     # print('probability score: ', best_class_probabilities)
@@ -178,10 +208,14 @@ def recom():
                                         cv2.putText(frame, result_names, (text_x, text_y), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
                                 else:
                                     print("from KNN Dlib: ", knn_name)
-                                    print("from weights Dlib:", emb_name)
+                                    print("from weights dlib_weights:", emb_name)
                                     print ('from Facent NN :', result_names)
-                                    # print('from embedding facenet', matching_id, dist)
+                                    print ('from Facent SVM :', result_names_svm)
+                                    print('from embedding facenet ', matching_id)
+                                    print('from facenet embedding distance: ', dist)
                                     print('probability score NN Facenet: ', best_class_probabilities)
+                                    print(' one or : ', one_or)                                    
+                                    print('final value after at frame :', "unknown")
                                     if show_id:
                                         font = cv2.FONT_HERSHEY_SIMPLEX
                                         cv2.putText(frame, "unknown", (text_x, text_y), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
@@ -223,5 +257,3 @@ def recom():
                     show_fps = not show_fps
             video_capture.release()
             cv2.destroyAllWindows()
-
-# recom()

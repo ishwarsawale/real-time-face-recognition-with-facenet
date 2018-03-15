@@ -17,8 +17,8 @@ import time
 
 
 def find_matching_id(id_dataset, embedding):
-    threshold = 1.10
-    min_dist = 7.80
+    threshold = 1.1
+    min_dist = 10.0
     matching_id = None
     for id_data in id_dataset:
         dist = get_embedding_distance(id_data.embedding, embedding)

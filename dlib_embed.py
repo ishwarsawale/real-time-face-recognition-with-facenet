@@ -38,8 +38,10 @@ def scan_known_people(known_people_folder):
 
 def get_result(filename, name, distance, show_distance=False):
     if show_distance:
-        print("{},{},{}".format(filename, name, distance))
+        # print("{},{}".format(name, distance))
+        return name
     else:
+        # print("{},{}".format(name, distance))
         return name
 def print_result(filename, name, distance, show_distance=False):
     if show_distance:
