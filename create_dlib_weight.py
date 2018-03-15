@@ -38,7 +38,7 @@ def scan_known_people(known_people_folder):
 
 
 def dlib_weights():
-    names, weights = scan_known_people('./input_dir')
+    names, weights = scan_known_people('./out_dir')
     with open('dlib_weights_names', 'wb') as fp:
         pickle.dump(names, fp)
     with open('dlib_weights', 'wb') as fp:

@@ -61,7 +61,7 @@ with open(bounding_boxes_filename, "w") as text_file:
                 else:
                     if img.ndim < 2:
                         print('Unable to align "%s"' % image_path)
-                        text_file.write('%s\n' % (output_filename))
+                        # text_file.write('%s\n' % (output_filename))
                         continue
                     if img.ndim == 2:
                         img = facenet.to_rgb(img)
@@ -90,19 +90,21 @@ with open(bounding_boxes_filename, "w") as text_file:
                         bb_temp[1] = det[1]
                         bb_temp[2] = det[2]
                         bb_temp[3] = det[3]
-                        try:
-                            cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
-                            scaled_temp = misc.imresize(cropped_temp, (image_size, image_size), interp='bilinear')
+                        # try:
+                        cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
+                        scaled_temp = misc.imresize(cropped_temp, (image_size, image_size), interp='bilinear')
 
-                            nrof_successfully_aligned += 1
-                            misc.imsave(output_filename, scaled_temp)
-                            text_file.write('%s %d %d %d %d\n' % (output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
-                        except Exception as e:
-                            continue
+                        nrof_successfully_aligned += 1
+                        misc.imsave(output_filename, scaled_temp)
+                        # text_file.write('%s %d %d %d %d\n' % (output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
+                        # except Exception as e:
+                            # continue
                        
                     else:
                         print('Unable to align "%s"' % image_path)
-                        text_file.write('%s\n' % (output_filename))
+                        os.remove(image_path)
+                        print('removed file %s' % image_path)
+                        # text_file.write('%s\n' % (output_filename))
 
 print('Total number of images: %d' % nrof_images_total)
 print('Number of successfully aligned images: %d' % nrof_successfully_aligned)

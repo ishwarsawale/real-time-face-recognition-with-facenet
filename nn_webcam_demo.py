@@ -46,7 +46,7 @@ import pickle
 from PIL import Image
 import idlib
 import dlib_embed
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # import recommender
 
 
@@ -94,8 +94,8 @@ def recom():
                 dlib_weights = pickle.load(fp)
             video_capture = cv2.VideoCapture(0)
             counter = 1
-            show_landmarks = False
-            show_bb = False
+            show_landmarks = True
+            show_bb = True
             show_id = True
             show_fps = False
             print('Start Recognition!')
@@ -163,18 +163,23 @@ def recom():
                                 result_names = HumanNames[best_class_indices[0]]
                                 frame_to_check = np.array(pil_im)
                                 predictions = idlib.predict(frame_to_check, model_path="trained_knn_model.clf")
-                                emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.6, False)
+                                emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.4, False)
                                 knn_name = ''
                                 for name, (top, right, bottom, left) in predictions:
                                     knn_name = name
                                 conf = (2 - dist) * 50 
-                                print(conf)
+                                # print(conf)
                                 dist_threshold = 0.3
-                                if (knn_name == emb_name == result_names) and (best_class_probabilities >= 0.70) and conf > 50 :
-                                    print ('recognized user is:', result_names)
-                                    for name, (top, right, bottom, left) in predictions:
-                                        print("- Found {} at ({}, {})".format(name, left, top))
-                                    print('probability score: ', best_class_probabilities)
+                                if (knn_name == emb_name == result_names) and (best_class_probabilities >= 0.70) and conf > 30 :
+                                    # print ('recognized user is:', result_names)
+                                    print("from KNN Dlib: ", knn_name)
+                                    print("from weights Dlib:", emb_name)
+                                    print ('from Facent NN :', result_names)
+                                    print('from embedding facenet', matching_id, dist)
+                                    print('probability score NN Facenet: ', best_class_probabilities)
+                                    # for name, (top, right, bottom, left) in predictions:
+                                        # print("- Found {} at ({}, {})".format(name, left, top))
+                                    # print('probability score: ', best_class_probabilities)
                                     if show_id:
                                         font = cv2.FONT_HERSHEY_SIMPLEX
                                         cv2.putText(frame, result_names, (text_x, text_y), font, 1, (255, 255, 255), 1, cv2.LINE_AA)

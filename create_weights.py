@@ -43,7 +43,7 @@ import argparse
 import time
 import twoFace
 import pickle
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 def facenet_128D():
@@ -62,7 +62,7 @@ def facenet_128D():
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             print('loaded graph')
             embedding_size = embeddings.get_shape()[1]
-            id_dataset = id_data.get_id_data('./out_dir', pnet, rnet, onet, sess, embeddings, images_placeholder, phase_train_placeholder)
+            id_dataset = id_data.get_id_data('./out_dir_dummy', pnet, rnet, onet, sess, embeddings, images_placeholder, phase_train_placeholder)
             with open('weights', 'wb') as fp:
                 pickle.dump(id_dataset, fp)
             

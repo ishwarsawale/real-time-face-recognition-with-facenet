@@ -18,7 +18,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.models import load_model
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 with tf.Graph().as_default():
 
     with tf.Session() as sess:
