@@ -7,6 +7,9 @@ import sys
 import argparse
 import nn_webcam_demo as demo
 import android_stream_demo as an_demo
+import webbrowser
+import subprocess
+
 menu_actions  = {}
 # Main menu
 def main_menu():
@@ -16,6 +19,7 @@ def main_menu():
     print ("Please choose the menu you want to start:")
     print ("1. Face Recognition Using WebCam")
     print ("2. Face Recognition Using Android Mobile")
+    print ("3. Create Training Data for User")
     print ("\n0. Quit")
     choice = raw_input(" >>  ")
     exec_menu(choice)
@@ -30,6 +34,7 @@ def custom_menu(msg):
     print ("Please choose the menu you want to start:")
     print ("1. Face Recognition Using WebCam")
     print ("2. Face Recognition Using Android Mobile")
+    print ("3. Create Training Data for User")
     print ("\n0. Quit")
     choice = raw_input(" >>  ")
     exec_menu(choice)
@@ -70,6 +75,24 @@ def menu2():
     exec_menu(choice)
     return
 
+# Menu 2
+def menu3():
+    print('\n')
+    print('-----------------------------------------------------------')
+    print('opening http://0.0.0.0:5000 to add data for new user')
+    print('-----------------------------------------------------------')
+    print('\n')
+    url = 'http://0.0.0.0:5000'
+    if sys.platform == 'darwin':    # in case of OS X
+        subprocess.Popen(['open', url])
+    else:
+        webbrowser.open_new_tab(url)
+    print ("9. Back")
+    print ("0. Quit")
+    choice = raw_input(" >>  ")
+    exec_menu(choice)
+    return
+
 def back():
     menu_actions['main_menu']()
 
@@ -80,8 +103,10 @@ menu_actions = {
     'main_menu': main_menu,
     '1': menu1,
     '2': menu2,
+    '3': menu3,
     '9': back,
     '0': exit,
 }
 if __name__ == "__main__":
     main_menu()
+    

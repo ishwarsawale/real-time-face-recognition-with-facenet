@@ -3,6 +3,7 @@ from flask import Flask, render_template, Response, request
 from camera import VideoCamera
 import os
 import cv2
+import shutil, sys
 app = Flask(__name__)
 app.debug = True
 # @app.route('/')
@@ -36,9 +37,15 @@ def gen(camera):
         image = camera.get_image()
         global count
         count += 1
-        # print(count)
         if count <= 500:
-          cv2.imwrite("%s_%d.jpg" % (handle_data.path, count), image)
+            cv2.imwrite("%s_%d.jpg" % (handle_data.path, count), image)
+            sourcepath='./'
+            sourcefiles = os.listdir(sourcepath)
+            destinationpath = handle_data.path
+            for file in sourcefiles:
+                if file.endswith('.jpg'):
+                    shutil.move(os.path.join(sourcepath,file), os.path.join(destinationpath,file))
+
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 count = 0
@@ -49,5 +56,10 @@ def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', debug=True)
+
+def app_make():
     app.run(host='0.0.0.0', debug=True)
+
+app_make()
