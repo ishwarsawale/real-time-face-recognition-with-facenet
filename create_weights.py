@@ -51,23 +51,5 @@ def facenet_128D():
     id_dataset = id_data.get_id_data()
     with open('weights', 'wb') as fp:
         pickle.dump(id_dataset, fp)
-    # with tf.Graph().as_default():
-    #     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
-    #     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
-    #     with sess.as_default():
-    #         pnet, rnet, onet = detect_face.create_mtcnn(sess, './d_npy')
-    #         print('Loading feature extraction model')
-    #         modeldir = './pre_model/20170511-185253.pb'
-    #         facenet.load_model(modeldir)
-    #         print('loaded model')
-    #         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
-    #         embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
-    #         phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
-    #         print('loaded graph')
-    #         embedding_size = embeddings.get_shape()[1]
-    #         id_dataset = id_data.get_id_data()
-    #         # id_dataset = id_data.get_id_data('./out_dir', pnet, rnet, onet, sess, embeddings, images_placeholder, phase_train_placeholder)
-    #         with open('weights', 'wb') as fp:
-    #             pickle.dump(id_dataset, fp)
-            
-facenet_128D()
+
+# facenet_128D()

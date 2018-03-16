@@ -53,12 +53,6 @@ def recom():
     client = MongoClient()
     client = MongoClient('localhost', 27017)
     db = client.retail_db
-    url='http://192.168.43.1:8080/shot.jpg'
-    try:
-        imgResp=urllib.urlopen(url)
-    except Exception as e:
-        msg = 'Android WebCam Server Not running'
-        menu.custom_menu(msg)
     print('Creating networks and loading parameters')
     with tf.Graph().as_default():
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
@@ -94,12 +88,12 @@ def recom():
 
             model = load_model('my_model_with_unknown.h5')
             # model = load_model('my_model.h5')
-            with open ('weights', 'rb') as fp:
-                id_dataset = pickle.load(fp)
-            with open ('dlib_weights_names', 'rb') as fp:
-                dlib_weight_names = pickle.load(fp)
-            with open ('dlib_weights', 'rb') as fp:
-                dlib_weights = pickle.load(fp)
+            # with open ('weights', 'rb') as fp:
+            #     id_dataset = pickle.load(fp)
+            # with open ('dlib_weights_names', 'rb') as fp:
+            #     dlib_weight_names = pickle.load(fp)
+            # with open ('dlib_weights', 'rb') as fp:
+            #     dlib_weights = pickle.load(fp)
             video_capture = cv2.VideoCapture(0)
             counter = 1
             show_landmarks = True
@@ -109,17 +103,9 @@ def recom():
             print('Start Recognition!')
             prevTime = 0
             while True:
-                try:
-                    imgResp=urllib.urlopen(url)
-                except Exception as e:
-                    print('Android WebCam Server Not running')
-                    menu.main_menu()
-                imgNp=np.array(bytearray(imgResp.read()),dtype=np.uint8)
-                img=cv2.imdecode(imgNp,-1)
                 start = time.time()
                 frame_height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                # ret, frame = video_capture.read()
-                frame = img
+                ret, frame = video_capture.read()
                 cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                 pil_im = Image.fromarray(frame)
                 frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
@@ -165,7 +151,7 @@ def recom():
                         scaled_reshape.append(scaled[i].reshape(-1,input_image_size,input_image_size,3))
                         feed_dict = {images_placeholder: scaled_reshape[i], phase_train_placeholder: False}
                         emb_array[0, :] = sess.run(embeddings, feed_dict=feed_dict)
-                        matching_id, dist = twoFace.find_matching_id(id_dataset, emb_array[0, :])
+                        # matching_id, dist = twoFace.find_matching_id(id_dataset, emb_array[0, :])
                         
                         predictions = model.predict_proba(emb_array)
                         best_class_indices = np.argmax(predictions, axis=1)
@@ -190,28 +176,28 @@ def recom():
                                 result_names = HumanNames[best_class_indices[0]]
                                 frame_to_check = np.array(pil_im)
                                 predictions = idlib.predict(frame_to_check, model_path="trained_knn_model.clf")
-                                emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.3, False)
+                                # emb_name = dlib_embed.call_me(dlib_weight_names,dlib_weights, frame_to_check,0.3, False)
                                 knn_name = ''
                                 for name, (top, right, bottom, left) in predictions:
                                     knn_name = name
-                                conf = (2 - dist) * 50 
+                                # conf = (2 - dist) * 50 
                                 # print(conf)
                                 one_or = ''
-                                if matching_id == knn_name:
-                                    one_or = matching_id
-                                if emb_name == result_names:
-                                    one_or = emb_name
+                                # if matching_id == knn_name:
+                                #     one_or = matching_id
+                                # if emb_name == result_names:
+                                #     one_or = emb_name
                                 dist_threshold = 0.3
-                                if (knn_name == result_names == result_names_svm) and (best_class_probabilities >= 0.70) and conf > 30 :
+                                if (knn_name == result_names == result_names_svm) and (best_class_probabilities >= 0.70)  :
                                     # print ('recognized user is:', result_names)
                                     print("from KNN Dlib: ", knn_name)
-                                    print("from weights Dlib:", emb_name)
+                                    # print("from weights Dlib:", emb_name)
                                     print ('from Facent NN :', result_names)
                                     print ('from Facent SVM :', result_names_svm)
-                                    print('from embedding facenet ', matching_id)
-                                    print('from facenet embedding distance: ', dist)
+                                    # print('from embedding facenet ', matching_id)
+                                    # print('from facenet embedding distance: ', dist)
                                     print('probability score NN Facenet: ', best_class_probabilities)
-                                    print(' one or : ', one_or)
+                                    # print(' one or : ', one_or)
 
                                     print('final value after at frame :', result_names)
                                     # for name, (top, right, bottom, left) in predictions:
@@ -222,13 +208,13 @@ def recom():
                                         cv2.putText(frame, result_names, (text_x, text_y), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
                                 else:
                                     print("from KNN Dlib: ", knn_name)
-                                    print("from weights dlib_weights:", emb_name)
+                                    # print("from weights dlib_weights:", emb_name)
                                     print ('from Facent NN :', result_names)
                                     print ('from Facent SVM :', result_names_svm)
-                                    print('from embedding facenet ', matching_id)
-                                    print('from facenet embedding distance: ', dist)
-                                    print('probability score NN Facenet: ', best_class_probabilities)
-                                    print(' one or : ', one_or)                                    
+                                    # print('from embedding facenet ', matching_id)
+                                    # print('from facenet embedding distance: ', dist)
+                                    # print('probability score NN Facenet: ', best_class_probabilities)
+                                    # print(' one or : ', one_or)                                    
                                     print('final value after at frame :', "unknown")
                                     if show_id:
                                         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -269,7 +255,7 @@ def recom():
                     show_id = not show_id
                 elif key == ord('f'):
                     show_fps = not show_fps
-            # video_capture.release()
+            video_capture.release()
             cv2.destroyAllWindows()
 
-# recom()
+recom()            

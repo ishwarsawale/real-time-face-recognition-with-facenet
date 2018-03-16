@@ -50,7 +50,7 @@ def print_result(filename, name, distance, show_distance=False):
         print("{}".format(name))
 
 
-def test_image(image_to_check, known_names, known_face_encodings, tolerance=0.6, show_distance=False):
+def test_image(image_to_check, known_names, known_face_encodings, tolerance=0.1, show_distance=False):
     # unknown_image = face_recognition.load_image_file(image_to_check)
     unknown_image = image_to_check
 

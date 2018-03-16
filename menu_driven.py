@@ -9,6 +9,12 @@ import nn_webcam_demo as demo
 import android_stream_demo as an_demo
 import webbrowser
 import subprocess
+import aligndata_first as align
+import create_dlib_weight as dweight
+import create_weights as fweight
+import train_nn_face as tface
+import create_classifier_se as tsvm
+import train_dlib_knn as tknn
 
 menu_actions  = {}
 # Main menu
@@ -18,8 +24,9 @@ def main_menu():
     print ("Welcome,\n")
     print ("Please choose the menu you want to start:")
     print ("1. Face Recognition Using WebCam")
-    print ("2. Face Recognition Using Android Mobile")
-    print ("3. Create Training Data for User")
+    print ("2. Face Recognition Using Android Cam")
+    print ("3. Create Training Data for Users")
+    print ("4. Train All Models for Users")
     print ("\n0. Quit")
     choice = raw_input(" >>  ")
     exec_menu(choice)
@@ -33,8 +40,9 @@ def custom_menu(msg):
     print('--------------------------------------')
     print ("Please choose the menu you want to start:")
     print ("1. Face Recognition Using WebCam")
-    print ("2. Face Recognition Using Android Mobile")
-    print ("3. Create Training Data for User")
+    print ("2. Face Recognition Using Android Cam")
+    print ("3. Create Training Data for Users")
+    print ("4. Train All Models for Users")
     print ("\n0. Quit")
     choice = raw_input(" >>  ")
     exec_menu(choice)
@@ -75,7 +83,7 @@ def menu2():
     exec_menu(choice)
     return
 
-# Menu 2
+# Menu 3
 def menu3():
     print('\n')
     print('-----------------------------------------------------------')
@@ -93,6 +101,20 @@ def menu3():
     exec_menu(choice)
     return
 
+# Menu 4
+def menu4():
+    align.align_data()
+    dweight.dlib_weights()
+    fweight.facenet_128D()
+    tface.train_nn()
+    tsvm.train_svm()
+    tknn.train_knn()
+    print ("9. Back")
+    print ("0. Quit")
+    choice = raw_input(" >>  ")
+    exec_menu(choice)
+    return
+
 def back():
     menu_actions['main_menu']()
 
@@ -104,6 +126,7 @@ menu_actions = {
     '1': menu1,
     '2': menu2,
     '3': menu3,
+    '4': menu4,
     '9': back,
     '0': exit,
 }

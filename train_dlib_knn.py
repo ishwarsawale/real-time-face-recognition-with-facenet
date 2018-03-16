@@ -25,7 +25,7 @@ def train(train_dir, model_save_path=None, n_neighbors=None, knn_algo='ball_tree
         # Loop through each training image for the current person
         for img_path in image_files_in_folder(os.path.join(train_dir, class_dir)):
             image = face_recognition.load_image_file(img_path)
-            face_bounding_boxes = face_recognition.face_locations(image)
+            face_bounding_boxes = face_recognition.face_locations(image, model='cnn')
 
             if len(face_bounding_boxes) != 1:
                 # If there are no people (or too many people) in a training image, skip the image.
@@ -55,9 +55,14 @@ def train(train_dir, model_save_path=None, n_neighbors=None, knn_algo='ball_tree
 
 
 
-if __name__ == "__main__":
-    # STEP 1: Train the KNN classifier and save it to disk
-    # Once the model is trained and saved, you can skip this step next time.
+def train_knn():
     print("Training KNN classifier...")
     classifier = train("./input_dir", model_save_path="trained_knn_model.clf", n_neighbors=4)
     print("Training complete!")
+
+# if __name__ == "__main__":
+#     # STEP 1: Train the KNN classifier and save it to disk
+#     # Once the model is trained and saved, you can skip this step next time.
+#     print("Training KNN classifier...")
+#     classifier = train("./input_dir", model_save_path="trained_knn_model.clf", n_neighbors=4)
+#     print("Training complete!")

@@ -46,4 +46,4 @@ def dlib_weights():
     with open('dlib_weights', 'wb') as fp:
         pickle.dump(weights, fp)
 
-dlib_weights()
+# dlib_weights()
