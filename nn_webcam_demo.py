@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,8 +15,6 @@ from sklearn.externals import joblib
 import pymongo
 from pymongo import MongoClient
 import datetime
-from keras.models import load_model
-import keras
 from tensorflow.python.platform import gfile
 import numpy as np
 import sys
@@ -39,14 +31,7 @@ from PIL import Image
 import idlib
 import dlib_embed
 import urllib
-import menu_driven as menu
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-# import recommender
-
-
-
-# In[2]:
-
 
 
 def recom():
@@ -85,8 +70,10 @@ def recom():
             with open(classifier_filename_exp, 'rb') as infile:
                 (model_svm, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
-
-            model = load_model('my_model_with_unknown.h5')
+            with open(classifier_filename_exp, 'rb') as infile:
+                (model, class_names) = pickle.load(infile)
+            # print('load classifier file-> %s' % classifier_filename_exp)
+            # model = load_model('my_model_with_unknown.h5')
             # model = load_model('my_model.h5')
             with open ('weights', 'rb') as fp:
                 id_dataset = pickle.load(fp)
@@ -104,20 +91,21 @@ def recom():
             prevTime = 0
             while True:
                 start = time.time()
-                frame_height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 ret, frame = video_capture.read()
-                cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                pil_im = Image.fromarray(frame)
                 frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
-                face_patches, padded_bounding_boxes, landmarks = detect_and_align.align_image(frame, pnet, rnet, onet)
                 if frame.ndim == 2:
                     frame = facenet.to_rgb(frame)
                 frame = frame[:, :, 0:3]
                 bounding_boxes, _ = detect_face.detect_face(frame, minsize, pnet, rnet, onet, threshold, factor)
+                face_patches, padded_bounding_boxes, landmarks = detect_and_align.align_image(frame, pnet, rnet, onet)
+                cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                pil_im = Image.fromarray(frame)
+                frame_height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                # print(bounding_boxes)
                 nrof_faces = bounding_boxes.shape[0]
                 print('Detected_FaceNum: %d' % nrof_faces)
 
-                if nrof_faces >= 1:
+                if nrof_faces > 0:
                     det = bounding_boxes[:, 0:4]
                     img_size = np.asarray(frame.shape)[0:2]
 
@@ -257,3 +245,6 @@ def recom():
                     show_fps = not show_fps
             video_capture.release()
             cv2.destroyAllWindows()
+
+
+# recom()

@@ -23,13 +23,6 @@ def handle_data():
 @app.route('/thanks')
 def store_data():
     print('store_data')
-    # sourcepath='./'
-    # sourcefiles = os.listdir(sourcepath)
-    # destinationpath = handle_data.path
-    # print('called me')
-    # for file in sourcefiles:
-    #     if file.endswith('.jpg'):
-    #         shutil.move(os.path.join(sourcepath,file), os.path.join(destinationpath,file))
     return render_template("thanks.html")
 def gen(camera):
     while True:
@@ -60,6 +53,7 @@ def video_feed():
 #     app.run(host='0.0.0.0', debug=True)
 
 def app_make():
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0',ssl_context=('cert.pem', 'key.pem'), debug=True)
+    # app.run(host='0.0.0.0', debug=True)
 
 app_make()

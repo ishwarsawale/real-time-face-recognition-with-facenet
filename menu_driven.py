@@ -87,10 +87,10 @@ def menu2():
 def menu3():
     print('\n')
     print('-----------------------------------------------------------')
-    print('opening http://0.0.0.0:5000 to add data for new user')
+    print('opening https://0.0.0.0:5000 to add data for new user')
     print('-----------------------------------------------------------')
     print('\n')
-    url = 'http://0.0.0.0:5000'
+    url = 'https://0.0.0.0:5000'
     if sys.platform == 'darwin':    # in case of OS X
         subprocess.Popen(['open', url])
     else:

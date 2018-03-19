@@ -1,7 +1,32 @@
+
+# coding: utf-8
+
+# In[1]:
+
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
+import tensorflow as tf
+from scipy import misc
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
+import facenet
+import detect_face
+import os
+from os.path import join as pjoin
+import sys
+import time
+import copy
+import math
+import pickle
+from sklearn.svm import SVC
+from sklearn.externals import joblib
+import pymongo
+from pymongo import MongoClient
+import datetime
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import facenet
@@ -15,6 +40,8 @@ from sklearn.externals import joblib
 import pymongo
 from pymongo import MongoClient
 import datetime
+from keras.models import load_model as kmodel
+import keras
 from tensorflow.python.platform import gfile
 import numpy as np
 import sys
@@ -31,19 +58,14 @@ from PIL import Image
 import idlib
 import dlib_embed
 import urllib
-import menu_driven as menu
+# import menu_dr`iven as menu
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+# import recommender
 
 def recom():
     client = MongoClient()
     client = MongoClient('localhost', 27017)
     db = client.retail_db
-    url='http://192.168.86.40:8080/shot.jpg'
-    try:
-        imgResp=urllib.urlopen(url)
-    except Exception as e:
-        msg = 'Android WebCam Server Not running'
-        menu.custom_menu(msg)
     print('Creating networks and loading parameters')
     with tf.Graph().as_default():
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
@@ -78,6 +100,8 @@ def recom():
             print('load classifier file-> %s' % classifier_filename_exp)
             with open(classifier_filename_exp, 'rb') as infile:
                 (model, class_names) = pickle.load(infile)
+            print('load classifier file-> %s' % classifier_filename_exp)
+
             # model = load_model('my_model_with_unknown.h5')
             # model = load_model('my_model.h5')
             with open ('weights', 'rb') as fp:
@@ -95,17 +119,9 @@ def recom():
             print('Start Recognition!')
             prevTime = 0
             while True:
-                try:
-                    imgResp=urllib.urlopen(url)
-                except Exception as e:
-                    print('Android WebCam Server Not running')
-                    menu.main_menu()
-                imgNp=np.array(bytearray(imgResp.read()),dtype=np.uint8)
-                img=cv2.imdecode(imgNp,-1)
                 start = time.time()
                 frame_height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                # ret, frame = video_capture.read()
-                frame = img
+                ret, frame = video_capture.read()
                 cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                 pil_im = Image.fromarray(frame)
                 frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
@@ -255,7 +271,7 @@ def recom():
                     show_id = not show_id
                 elif key == ord('f'):
                     show_fps = not show_fps
-            # video_capture.release()
+            video_capture.release()
             cv2.destroyAllWindows()
 
-# recom()
+recom()
