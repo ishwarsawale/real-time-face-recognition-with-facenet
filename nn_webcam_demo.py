@@ -77,10 +77,13 @@ def recom():
             # model = load_model('my_model.h5')
             with open ('weights', 'rb') as fp:
                 id_dataset = pickle.load(fp)
+            print('load facenet weights')
             with open ('dlib_weights_names', 'rb') as fp:
                 dlib_weight_names = pickle.load(fp)
+            print('load dlib weights')
             with open ('dlib_weights', 'rb') as fp:
                 dlib_weights = pickle.load(fp)
+            print('load dlib knn model')
             video_capture = cv2.VideoCapture(0)
             counter = 1
             show_landmarks = True

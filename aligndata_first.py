@@ -20,8 +20,7 @@ def align_data():
     output_dir = os.path.expanduser(output_dir_path)
     if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-
-    datadir = './input_dir'
+    datadir = './input_dir/'
     dataset = facenet.get_dataset(datadir)
 
     print('Creating networks and loading parameters')
@@ -111,6 +110,7 @@ def align_data():
 
     print('Total number of images: %d' % nrof_images_total)
     print('Number of successfully aligned images: %d' % nrof_successfully_aligned)
+    os.remove(bounding_boxes_filename)
 
 # align_data()
 

@@ -57,7 +57,7 @@ def train(train_dir, model_save_path=None, n_neighbors=None, knn_algo='ball_tree
 
 def train_knn():
     print("Training KNN classifier...")
-    classifier = train("./input_dir", model_save_path="trained_knn_model.clf", n_neighbors=4)
+    train("./input_dir", model_save_path="trained_knn_model.clf", n_neighbors=4)
     print("Training complete!")
 
 # if __name__ == "__main__":
