@@ -54,7 +54,7 @@ with tf.Graph().as_default():
             (model, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
 
-        video_capture = cv2.VideoCapture('./test.mp4')
+        video_capture = cv2.VideoCapture(0)
         c = 0
 
         # #video writer
